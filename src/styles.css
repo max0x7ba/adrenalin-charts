@@ -1,1 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+body {
+    /* color: white; */
+    background-color: #F8F9F9;
+}
+
+input[type=color] {
+    padding: 0;
+    margin-top: calc(.375rem + 1px);
+}
+
+.right {
+    text-align: right;
+}
