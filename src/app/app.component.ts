@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
 import { DataAccess, Csv } from './data-access.service'
 import { Chart } from 'angular-highcharts';
+import { Options } from 'highcharts';
 
 declare var require: any;
 const Highcharts = require('highcharts');
 Highcharts.setOptions({
     credits: {enabled: false},
     chart: {
-        backgroundColor: "#F8F9F9";
+        backgroundColor: "#F8F9F9"
     }
 });
 
@@ -145,7 +146,7 @@ export class AppComponent {
             return [].concat.apply([], series);;
         };
 
-        this.fps_avg_chart = new Chart({
+        this.fps_avg_chart = new Chart(<Options>{
             plotOptions: {
                 bar: {
                     dataLabels: {
