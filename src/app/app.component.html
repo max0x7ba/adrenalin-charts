@@ -6,7 +6,7 @@
 
 <form  *ngIf="!csvs">
   <div class="form-group">
-    <label for="filenames">Choose performance log files to display</label>
+    <label for="filenames">Choose performance log files to display. Use 1 second sampling interval in <a href="https://support.amd.com/en-us/kb-articles/Pages/DH-026.aspx#Performance">AMD Radeon™ Overlay performance logging settings</a> when logging.</label>
     <input class="form-control-file" id="filenames" name="filenames" type="file" multiple (change)="data_access.load_local_csvs($event.target.files)">
 </div>
 </form>

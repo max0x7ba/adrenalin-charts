@@ -227,7 +227,7 @@ export class AppComponent {
     }
 
     private on_csvs(csvs: Csv[]) {
-        console.log("on_csvs", csvs);
+        // console.log("on_csvs", csvs);
         for(var i = 0; i < csvs.length; ++i)
             csvs[i].series_color = series_colors[i % series_colors.length];
         this.csvs = csvs;
