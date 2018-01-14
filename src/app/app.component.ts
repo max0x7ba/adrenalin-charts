@@ -87,12 +87,31 @@ export class AppComponent {
             series: series,
             title: {text: 'FPS timeline'},
             yAxis: {
-                title: { text: 'Frames Per Second' }
+                title: { text: 'Frames Per Second' },
+                plotLines: [
+                    {
+                        color: 'red',
+                        value: 30,
+                        width: 1,
+                        dashStyle: 'ShortDash',
+                        label: { text: "30 FPS" }
+                    },
+                    {
+                        color: 'green',
+                        value: 60,
+                        width: 1,
+                        dashStyle: 'ShortDash',
+                        label: { text: "60 FPS" }
+                    }
+                ]
             },
             xAxis: {
                 title: { text: 'Seconds since recording start' }
             },
-            tooltip: { shared: true }
+            tooltip: {
+                shared: true,
+                valueSuffix: ' FPS'
+            }
         });
     }
 
@@ -116,12 +135,31 @@ export class AppComponent {
             series: series,
             title: { text: 'Cumulative FPS histogram' },
             yAxis: {
-                title: { text: 'Frames Per Second' }
+                title: { text: 'Frames Per Second' },
+                plotLines: [
+                    {
+                        color: 'red',
+                        value: 30,
+                        width: 1,
+                        dashStyle: 'ShortDash',
+                        label: { text: "30 FPS" }
+                    },
+                    {
+                        color: 'green',
+                        value: 60,
+                        width: 1,
+                        dashStyle: 'ShortDash',
+                        label: { text: "60 FPS" }
+                    }
+                ]
             },
             xAxis: {
                 title: { text: 'Percent' }
             },
-            tooltip: {shared: true}
+            tooltip: {
+                shared: true,
+                valueSuffix: ' FPS'
+            }
         });
     }
 
@@ -152,6 +190,13 @@ export class AppComponent {
                     dataLabels: {
                         enabled: true
                     }
+                },
+                series: {
+                    states: {
+                        hover: {
+                            enabled: false
+                        }
+                    }
                 }
             },
             legend: {
@@ -169,6 +214,14 @@ export class AppComponent {
             xAxis: {
                 type: 'category',
                 title: { text: null }
+            },
+            yAxis: {
+                title: { text: 'Frames Per Second' }
+            },
+            tooltip: {
+                shared: true,
+                valueSuffix: ' FPS',
+                followPointer: true
             }
         });
     }

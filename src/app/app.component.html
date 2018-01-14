@@ -1,6 +1,12 @@
+<div class="row">
+  <div class="col-12">
+    <H5>Display your AMD Adrenalin performance logs with Adrenalin Charts</H5>
+  </div>
+</div>
+
 <form  *ngIf="!csvs">
   <div class="form-group">
-    <label for="filenames">Choose CSV metric files</label>
+    <label for="filenames">Choose performance log files to display</label>
     <input class="form-control-file" id="filenames" name="filenames" type="file" multiple (change)="data_access.load_local_csvs($event.target.files)">
 </div>
 </form>
