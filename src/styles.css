@@ -1,6 +1,8 @@
 body {
     /* color: white; */
-    background-color: #F8F9F9;
+    background-color: #2a2a2b;
+    color: #E0E0E3;
+    font-family: "Roboto Slab";
 }
 
 input[type=color] {

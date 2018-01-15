@@ -5,14 +5,212 @@ import { Options } from 'highcharts';
 
 declare var require: any;
 const Highcharts = require('highcharts');
-Highcharts.setOptions({
-    credits: {enabled: false},
+
+Highcharts.theme = {
+    colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
+    ],
     chart: {
-        backgroundColor: "#F8F9F9"
-    }
+        backgroundColor: {
+            linearGradient: {
+                x1: 0,
+                y1: 0,
+                x2: 1,
+                y2: 1
+            },
+            stops: [
+                [0, '#2a2a2b'],
+                [1, '#3e3e40']
+            ]
+        },
+        style: {
+            fontFamily: 'Roboto Slab'
+        },
+        plotBorderColor: '#606063'
+    },
+    title: {
+        style: {
+            color: '#E0E0E3',
+            fontSize: '20px'
+        }
+    },
+    subtitle: {
+        style: {
+            color: '#E0E0E3'
+        }
+    },
+    xAxis: {
+        gridLineColor: '#707073',
+        labels: {
+            style: {
+                color: '#E0E0E3'
+            }
+        },
+        lineColor: '#707073',
+        minorGridLineColor: '#505053',
+        tickColor: '#707073',
+        title: {
+            style: {
+                color: '#A0A0A3'
+            }
+        }
+    },
+    yAxis: {
+        gridLineColor: '#707073',
+        labels: {
+            style: {
+                color: '#E0E0E3'
+            }
+        },
+        lineColor: '#707073',
+        minorGridLineColor: '#505053',
+        tickColor: '#707073',
+        tickWidth: 1,
+        title: {
+            style: {
+                color: '#A0A0A3'
+            }
+        }
+    },
+    tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        style: {
+            color: '#F0F0F0'
+        }
+    },
+    plotOptions: {
+        series: {
+            dataLabels: {
+                color: '#E0E0E3'
+            },
+            marker: {
+                lineColor: '#333'
+            }
+        },
+        boxplot: {
+            fillColor: '#505053'
+        },
+        candlestick: {
+            lineColor: 'white'
+        },
+        errorbar: {
+            color: 'white'
+        }
+    },
+    legend: {
+        itemStyle: {
+            color: '#E0E0E3'
+        },
+        itemHoverStyle: {
+            color: '#FFF'
+        },
+        itemHiddenStyle: {
+            color: '#606063'
+        }
+    },
+
+    credits: { enabled: false },
+
+    labels: {
+        style: {
+            color: '#707073'
+        }
+    },
+
+    drilldown: {
+        activeAxisLabelStyle: {
+            color: '#F0F0F3'
+        },
+        activeDataLabelStyle: {
+            color: '#F0F0F3'
+        }
+    },
+
+    navigation: {
+        buttonOptions: {
+            symbolStroke: '#DDDDDD',
+            theme: {
+                fill: '#505053'
+            }
+        }
+    },
+
+    // scroll charts
+    rangeSelector: {
+        buttonTheme: {
+            fill: '#505053',
+            stroke: '#000000',
+            style: {
+                color: '#CCC'
+            },
+            states: {
+                hover: {
+                    fill: '#707073',
+                    stroke: '#000000',
+                    style: {
+                        color: 'white'
+                    }
+                },
+                select: {
+                    fill: '#000003',
+                    stroke: '#000000',
+                    style: {
+                        color: 'white'
+                    }
+                }
+            }
+        },
+        inputBoxBorderColor: '#505053',
+        inputStyle: {
+            backgroundColor: '#333',
+            color: 'silver'
+        },
+        labelStyle: {
+            color: 'silver'
+        }
+    },
+
+    navigator: {
+        handles: {
+            backgroundColor: '#666',
+            borderColor: '#AAA'
+        },
+        outlineColor: '#CCC',
+        maskFill: 'rgba(255,255,255,0.1)',
+        series: {
+            color: '#7798BF',
+            lineColor: '#A6C7ED'
+        },
+        xAxis: {
+            gridLineColor: '#505053'
+        }
+    },
+
+    scrollbar: {
+        barBackgroundColor: '#808083',
+        barBorderColor: '#808083',
+        buttonArrowColor: '#CCC',
+        buttonBackgroundColor: '#606063',
+        buttonBorderColor: '#606063',
+        rifleColor: '#FFF',
+        trackBackgroundColor: '#404043',
+        trackBorderColor: '#404043'
+    },
+
+    // special colors for some of the
+    legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
+    background2: '#505053',
+    dataLabelsColor: '#B0B0B3',
+    textColor: '#C0C0C0',
+    contrastTextColor: '#F0F0F3',
+    maskColor: 'rgba(255,255,255,0.3)',
 });
 
-const series_colors = ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'];
+// Apply the theme
+Highcharts.setOptions(Highcharts.theme);
+
+const plot_lines_label_style = { color: '#E0E0E3' };
+const plot_lines_line_color = '#707073';
+const series_colors = Highcharts.theme.colors;
 
 function cumulative_histogram(values: Float32Array) {
     values = values.slice();
@@ -79,6 +277,9 @@ export class AppComponent {
             }
         });
         this.fps_chart = new Chart({
+            chart: {
+                height: 600
+            },
             plotOptions: {
                 line: {
                     marker: { enabled: false }
@@ -88,20 +289,21 @@ export class AppComponent {
             title: {text: 'FPS timeline'},
             yAxis: {
                 title: { text: 'Frames Per Second' },
+                minorTickWidth: 10,
                 plotLines: [
                     {
                         color: 'red',
                         value: 30,
                         width: 1,
                         dashStyle: 'ShortDash',
-                        label: { text: "30 FPS" }
+                        label: { style: plot_lines_label_style, text: "30 FPS" }
                     },
                     {
                         color: 'green',
                         value: 60,
                         width: 1,
                         dashStyle: 'ShortDash',
-                        label: { text: "60 FPS" }
+                        label: { style: plot_lines_label_style, text: "60 FPS" }
                     }
                 ]
             },
@@ -136,25 +338,50 @@ export class AppComponent {
             title: { text: 'Cumulative FPS histogram' },
             yAxis: {
                 title: { text: 'Frames Per Second' },
+                tickInterval: 10,
                 plotLines: [
                     {
                         color: 'red',
                         value: 30,
                         width: 1,
                         dashStyle: 'ShortDash',
-                        label: { text: "30 FPS" }
+                        label: { style: plot_lines_label_style, text: "30 FPS" }
                     },
                     {
                         color: 'green',
                         value: 60,
                         width: 1,
                         dashStyle: 'ShortDash',
-                        label: { text: "60 FPS" }
+                        label: { style: plot_lines_label_style, text: "60 FPS" }
                     }
                 ]
             },
             xAxis: {
-                title: { text: 'Percent' }
+                title: { text: 'Percent' },
+                tickInterval: 10,
+                plotLines: [
+                    {
+                        color: plot_lines_line_color,
+                        value: 50,
+                        width: 1,
+                        dashStyle: 'ShortDash',
+                        label: { style: plot_lines_label_style, text: "Median" }
+                    },
+                    {
+                        color: plot_lines_line_color,
+                        value: 95,
+                        width: 1,
+                        dashStyle: 'ShortDash',
+                        label: { style: plot_lines_label_style, text: "95%" }
+                    },
+                    {
+                        color: plot_lines_line_color,
+                        value: 99,
+                        width: 1,
+                        dashStyle: 'ShortDash',
+                        label: { style: plot_lines_label_style, text: "99%" }
+                    }
+                ]
             },
             tooltip: {
                 shared: true,
@@ -189,7 +416,8 @@ export class AppComponent {
                 bar: {
                     dataLabels: {
                         enabled: true
-                    }
+                    },
+                    borderWidth: 0
                 },
                 series: {
                     states: {
@@ -205,7 +433,10 @@ export class AppComponent {
                 verticalAlign: 'top',
                 floating: true,
             },
-            chart: { type: 'bar' },
+            chart: {
+                type: 'bar',
+                height: 100 + csvs.length * 100
+            },
             series: make_series_fn(csvs),
             update_fn: chart => chart.update({
                 series: make_series_fn(csvs)
