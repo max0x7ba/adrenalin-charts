@@ -427,15 +427,9 @@ export class AppComponent {
                     }
                 }
             },
-            legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'top',
-                floating: true
-            },
             chart: {
                 type: 'bar',
-                height: 100 + csvs.length * 100
+                height: 120 + csvs.length * 100
             },
             series: make_series_fn(csvs),
             update_fn: chart => chart.update({
