@@ -13,3 +13,7 @@ input[type=color] {
 .right {
     text-align: right;
 }
+
+.fps_avg_chart .highcharts-legend-item rect {
+    display:none;
+}

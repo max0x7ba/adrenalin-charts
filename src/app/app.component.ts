@@ -431,7 +431,7 @@ export class AppComponent {
                 layout: 'vertical',
                 align: 'right',
                 verticalAlign: 'top',
-                floating: true,
+                floating: true
             },
             chart: {
                 type: 'bar',
