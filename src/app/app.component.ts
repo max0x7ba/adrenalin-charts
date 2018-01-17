@@ -250,6 +250,8 @@ function descriptive_stats(values: Float32Array): object {
 
 const descriptive_stats_names = Object.keys(descriptive_stats(new Float32Array(2)));
 
+// const time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -261,8 +263,46 @@ export class AppComponent {
     fps_chart: Chart = null;
     fps_histogram_chart: Chart = null;
 
+    time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
+    time_series_charts: Chart[] = [];
+
     constructor(private data_access: DataAccess) {
         data_access.csvs.subscribe(csvs => this.on_csvs(csvs));
+    }
+
+    private create_time_series_chart(csvs: Csv[], column_name) {
+        let series = csvs.map(csv => {
+            return {
+                name: csv.series_name,
+                data: csv.columns[column_name].slice(csv.series_offset),
+                color: csv.series_color,
+                id: csv.filename,
+                column_name: column_name,
+                transform: a => a
+            }
+        });
+        return new Chart({
+            chart: {
+                height: 400
+            },
+            plotOptions: {
+                line: {
+                    marker: { enabled: false }
+                }
+            },
+            series: series,
+            title: { text: column_name + ' timeline' },
+            yAxis: {
+                title: { text: column_name }
+            },
+            xAxis: {
+                crosshair: true,
+                title: { text: 'Seconds since recording start' }
+            },
+            tooltip: {
+                shared: true
+            }
+        });
     }
 
     private display_fps_chart(csvs: Csv[]) {
@@ -308,6 +348,7 @@ export class AppComponent {
                 ]
             },
             xAxis: {
+                crosshair: true,
                 title: { text: 'Seconds since recording start' }
             },
             tooltip: {
@@ -357,6 +398,7 @@ export class AppComponent {
                 ]
             },
             xAxis: {
+                crosshair: true,
                 title: { text: 'Percent' },
                 tickInterval: 10,
                 plotLines: [
@@ -456,9 +498,10 @@ export class AppComponent {
         for(var i = 0; i < csvs.length; ++i)
             csvs[i].series_color = series_colors[i % series_colors.length];
         this.csvs = csvs;
-        this.display_fps_chart(csvs);
         this.display_fps_histogram(csvs);
         this.display_fps_avg_chart(csvs);
+        // this.display_fps_chart(csvs);
+        this.time_series_charts = this.time_series_columns.map(column_name => this.create_time_series_chart(csvs, column_name));
     }
 
     update_name(csv: Csv, name: string) {
