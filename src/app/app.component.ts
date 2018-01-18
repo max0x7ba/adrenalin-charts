@@ -3,25 +3,25 @@ import { DataAccess, Csv } from './data-access.service'
 import { Chart } from 'angular-highcharts';
 import { Options } from 'highcharts';
 
-declare var require: any;
 const Highcharts = require('highcharts');
 
 Highcharts.theme = {
     colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
     ],
     chart: {
-        backgroundColor: {
-            linearGradient: {
-                x1: 0,
-                y1: 0,
-                x2: 1,
-                y2: 1
-            },
-            stops: [
-                [0, '#2a2a2b'],
-                [1, '#3e3e40']
-            ]
-        },
+        backgroundColor: '#2a2a2b',
+        // backgroundColor: {
+        //     linearGradient: {
+        //         x1: 0,
+        //         y1: 0,
+        //         x2: 1,
+        //         y2: 1
+        //     },
+        //     stops: [
+        //         [0, '#2a2a2b'],
+        //         [1, '#3e3e40']
+        //     ]
+        // },
         style: {
             fontFamily: 'Roboto Slab'
         },
@@ -311,15 +311,17 @@ export class AppComponent {
     }
 
     private create_time_series_chart(csvs: Csv[]) {
-        let height = 300;
-        let gap = 40;
+        // let height = 300;
+        // let gap = 40;
+        let height = 100 / time_series_columns.length;
         let yaxis = time_series_columns.map((column_name, column_idx) => {
             return {
                 title: { text: column_name },
-                top: (gap + height) * column_idx,
-                height: height,
+                top: (height * column_idx) + '%',
+                height: (height - 1) + '%',
                 offset: 0,
                 resize: { enabled: true },
+                className: 'time_series_plot',
                 labels: { align: 'right' }
             };
         });
@@ -340,11 +342,20 @@ export class AppComponent {
 
         var options = {
             chart: {
-                height: time_series_columns.length * (gap + height)
+                title: { text: "Timeline" },
+                // height: time_series_columns.length * (gap + height)
+                height: 2000
             },
             plotOptions: {
                 line: {
                     marker: { enabled: false }
+                },
+                series: {
+                    states: {
+                        hover: {
+                            enabled: false
+                        }
+                    }
                 }
             },
             series: series,
@@ -352,7 +363,8 @@ export class AppComponent {
             yAxis: yaxis,
             xAxis: {
                 crosshair: true,
-                opposite: true
+                opposite: true,
+                gridLineWidth: 1
             },
             tooltip: {
                 shared: true,
@@ -455,8 +467,16 @@ export class AppComponent {
             plotOptions: {
                 line: {
                     marker: { enabled: false }
+                },
+                series: {
+                    states: {
+                        hover: {
+                            enabled: false
+                        }
+                    }
                 }
             },
+            legend: { enabled: false },
             series: series,
             title: { text: 'Cumulative FPS histogram' },
             yAxis: {
@@ -481,7 +501,7 @@ export class AppComponent {
             },
             xAxis: {
                 crosshair: true,
-                title: { text: 'Percent' },
+                title: { text: 'Percentile' },
                 tickInterval: 10,
                 plotLines: [
                     {
@@ -604,9 +624,12 @@ export class AppComponent {
                 update_fn(chart);
             }
             else {
-                let series = chart.get(csv.filename);
-                let f = series.userOptions.transform;
-                series.update({data: f(csv.columns[series.userOptions.column_name].slice(csv.series_offset))});
+                chart.series.forEach(series => {
+                    if(series.options.id === csv.filename) {
+                        let f = series.userOptions.transform;
+                        series.update({data: f(csv.columns[series.userOptions.column_name].slice(csv.series_offset))});
+                    }
+                });
             }
         });
     }
@@ -618,8 +641,10 @@ export class AppComponent {
                 update_fn(chart);
             }
             else {
-                let series = chart.get(csv.filename);
-                series.update(a);
+                chart.series.forEach(series => {
+                    if(series.options.id === csv.filename)
+                        series.update(a);
+                });
             }
         });
     }
