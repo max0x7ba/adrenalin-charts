@@ -47,10 +47,20 @@
   </div>
 </div>
 
-<ng-container *ngFor="let c of time_series_charts; index as i">
+<div *ngIf="time_series_charts" id="time_series_charts"
+     (mousemove)="sync_time_series_charts($event)"
+     (touchmove)="sync_time_series_charts($event)"
+     (touchstart)="sync_time_series_charts($event)">
   <div class="row">
     <div class="col">
-      <div [chart]="c"></div>
+      <H5>Timelines</H5>
     </div>
   </div>
-</ng-container>
+  <ng-container *ngFor="let c of time_series_charts; index as i">
+    <div class="row">
+      <div class="col">
+        <div [chart]="c"></div>
+      </div>
+    </div>
+  </ng-container>
+</div>
