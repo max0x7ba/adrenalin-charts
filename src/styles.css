@@ -17,3 +17,8 @@ input[type=color] {
 .fps_avg_chart .highcharts-legend-item rect {
     display:none;
 }
+
+table.time_series {
+    font-family: "PT Sans Narrow";
+    text-align: right;
+}

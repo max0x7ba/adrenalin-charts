@@ -6,12 +6,6 @@ import { Options } from 'highcharts';
 declare var require: any;
 const Highcharts = require('highcharts');
 
-Highcharts.Point.prototype.highlight = function(event) {
-    this.onMouseOver(); // Show the hover marker.
-    // this.series.chart.tooltip.refresh(this); // Show the tooltip.
-    // this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair.
-};
-
 Highcharts.theme = {
     colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
     ],
@@ -255,6 +249,49 @@ function descriptive_stats(values: Float32Array): object {
 }
 
 const descriptive_stats_names = Object.keys(descriptive_stats(new Float32Array(2)));
+const time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
+
+// time_series_chart_options = {
+//     "FPS": {
+//         chart: {
+//             height: 400
+//         },
+//         yAxis: {
+//             title: { text: 'Frames Per Second' },
+//             minorTickWidth: 10,
+//             plotLines: [
+//                 {
+//                     color: 'red',
+//                     value: 30,
+//                     width: 1,
+//                     dashStyle: 'ShortDash',
+//                     label: { style: plot_lines_label_style, text: "30 FPS" }
+//                 },
+//                 {
+//                     color: 'green',
+//                     value: 60,
+//                     width: 1,
+//                     dashStyle: 'ShortDash',
+//                     label: { style: plot_lines_label_style, text: "60 FPS" }
+//                 }
+//             ]
+//         },
+//         xAxis: {
+//             crosshair: true,
+//             opposite: true,
+//             visible: true,
+//             title: {
+//                 text: 'Seconds since recording start'
+//             }
+//         },
+//         tooltip: {
+//             valueSuffix: ' FPS'
+//         },
+//         legend: {
+//             enabled: true
+//         }
+//     }
+// };
 
 @Component({
   selector: 'app-root',
@@ -266,103 +303,44 @@ export class AppComponent {
     fps_avg_chart: Chart = null;
     fps_chart: Chart = null;
     fps_histogram_chart: Chart = null;
-
-    time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
-    time_series_chart_options = {
-        "FPS": {
-            chart: {
-                height: 400
-            },
-            yAxis: {
-                title: { text: 'Frames Per Second' },
-                minorTickWidth: 10,
-                plotLines: [
-                    {
-                        color: 'red',
-                        value: 30,
-                        width: 1,
-                        dashStyle: 'ShortDash',
-                        label: { style: plot_lines_label_style, text: "30 FPS" }
-                    },
-                    {
-                        color: 'green',
-                        value: 60,
-                        width: 1,
-                        dashStyle: 'ShortDash',
-                        label: { style: plot_lines_label_style, text: "60 FPS" }
-                    }
-                ]
-            },
-            xAxis: {
-                crosshair: true,
-                opposite: true,
-                visible: true,
-                title: {
-                    text: 'Seconds since recording start'
-                }
-            },
-            tooltip: {
-                valueSuffix: ' FPS'
-            },
-            legend: {
-                enabled: true
-            },
-            plotOptions: {
-                series: {
-                    events: {
-                        legendItemClick: (() => {
-                            let that = this;
-                            return function(event) {
-                                for(var i = 0; i < that.time_series_charts.length; ++i) {
-                                    let chart = that.time_series_charts[i];
-                                    let series = (<any>chart.ref).get(this.options.id);
-                                    if(series) {
-                                        series.visible = this.visible;
-                                        // if(this.visible)
-                                        //     series.visible;
-                                        // else
-                                        //     series.show();
-                                    }
-                                }
-                            };
-                        })()
-                    }
-                }
-            },
-
-        }
-    };
     time_series_charts: Chart[] = null;
+    time_series_chart: Chart = null;
 
     constructor(private data_access: DataAccess) {
         data_access.csvs.subscribe(csvs => this.on_csvs(csvs));
     }
 
-    sync_time_series_charts(e) {
-        for(let chart of this.time_series_charts) {
-            let event = (<any>chart.ref).pointer.normalize(e); // Find coordinates within the chart.
-            for(let series of (<any>chart.ref).series) {
-                let point = series.searchPoint(event, true); // Get the hovered point.
-                if(point)
-                    point.highlight(e);
-            }
-        }
-    }
-
-    private create_time_series_chart(csvs: Csv[], column_name) {
-        let series = csvs.map(csv => {
+    private create_time_series_chart(csvs: Csv[]) {
+        let height = 300;
+        let gap = 40;
+        let yaxis = time_series_columns.map((column_name, column_idx) => {
             return {
-                name: csv.series_name,
-                data: csv.columns[column_name].slice(csv.series_offset),
-                color: csv.series_color,
-                id: csv.filename,
-                column_name: column_name,
-                transform: a => a
-            }
+                title: { text: column_name },
+                top: (gap + height) * column_idx,
+                height: height,
+                offset: 0,
+                resize: { enabled: true },
+                labels: { align: 'right' }
+            };
         });
+
+        let series = [].concat.apply([], time_series_columns.map((column_name, column_idx) => {
+            return csvs.map(csv => {
+                return {
+                    yAxis: column_idx,
+                    name: csv.series_name,
+                    data: csv.columns[column_name].slice(csv.series_offset),
+                    color: csv.series_color,
+                    id: csv.filename,
+                    column_name: column_name,
+                    transform: a => a
+                };
+            });
+        }));
+
         var options = {
             chart: {
-                height: 200
+                height: time_series_columns.length * (gap + height)
             },
             plotOptions: {
                 line: {
@@ -371,77 +349,96 @@ export class AppComponent {
             },
             series: series,
             title: { text: null },
-            yAxis: {
-                title: { text: column_name }
-            },
+            yAxis: yaxis,
             xAxis: {
-                crosshair: true
+                crosshair: true,
+                opposite: true
             },
             tooltip: {
-                shared: true
+                shared: true,
+                useHTML: true,
+                formatter: function() {
+                    var s = '<p>' + this.x + ' seconds since start</p>';
+                    s += '<table class="time_series"><thead><tr><th></th>';
+                    for(let csv of csvs)
+                        s += '<th style="color: ' + csv.series_color + '">' + csv.series_name + '</th>';
+                    s += '</tr></thead><tbody>';
+                    for(let column_name of time_series_columns) {
+                        s += '<tr><td>' + column_name + '</td>';
+                        for(let csv of csvs) {
+                            for(let point of this.points) {
+                                if(point.series.options.column_name === column_name && point.series.options.id === csv.filename)
+                                    s += '<td>' + Math.round(point.y * 10) / 10 + '</td>';
+                            }
+                        }
+                        s += '</tr>';
+                    }
+                    s += '</tbody></table>';
+                    return s;
+                }
             },
             legend: {
                 enabled: false,
                 verticalAlign: "top"
             }
         };
-        let extra_options = this.time_series_chart_options[column_name] || {};
-        options = Highcharts.merge(options, extra_options);
+        // let extra_options = this.time_series_chart_options[column_name] || {};
+        // options = Highcharts.merge(options, extra_options);
         return new Chart(options);
     }
 
-    private display_fps_chart(csvs: Csv[]) {
-        let series = csvs.map(csv => {
-            return {
-                name: csv.series_name,
-                data: csv.columns['FPS'].slice(csv.series_offset),
-                color: csv.series_color,
-                id: csv.filename,
-                column_name: 'FPS',
-                transform: a => a
-            }
-        });
-        this.fps_chart = new Chart({
-            chart: {
-                height: 600
-            },
-            plotOptions: {
-                line: {
-                    marker: { enabled: false }
-                }
-            },
-            series: series,
-            title: {text: 'FPS timeline'},
-            yAxis: {
-                title: { text: 'Frames Per Second' },
-                minorTickWidth: 10,
-                plotLines: [
-                    {
-                        color: 'red',
-                        value: 30,
-                        width: 1,
-                        dashStyle: 'ShortDash',
-                        label: { style: plot_lines_label_style, text: "30 FPS" }
-                    },
-                    {
-                        color: 'green',
-                        value: 60,
-                        width: 1,
-                        dashStyle: 'ShortDash',
-                        label: { style: plot_lines_label_style, text: "60 FPS" }
-                    }
-                ]
-            },
-            xAxis: {
-                crosshair: true,
-                title: { text: 'Seconds since recording start' }
-            },
-            tooltip: {
-                shared: true,
-                valueSuffix: ' FPS'
-            }
-        });
-    }
+    // private display_fps_chart(csvs: Csv[]) {
+    //     let series = csvs.map(csv => {
+    //         return {
+    //             name: csv.series_name,
+    //             data: csv.columns['FPS'].slice(csv.series_offset),
+    //             color: csv.series_color,
+    //             id: csv.filename,
+    //             column_name: 'FPS',
+    //             transform: a => a
+    //         }
+    //     });
+    //     this.fps_chart = new Chart({
+    //         chart: {
+    //             height: 600
+    //         },
+    //         plotOptions: {
+    //             line: {
+    //                 marker: { enabled: false }
+    //             }
+    //         },
+    //         series: series,
+    //         title: {text: 'FPS timeline'},
+    //         yAxis: {
+    //             title: { text: 'Frames Per Second' },
+    //             minorTickWidth: 10,
+    //             plotLines: [
+    //                 {
+    //                     color: 'red',
+    //                     value: 30,
+    //                     width: 1,
+    //                     dashStyle: 'ShortDash',
+    //                     label: { style: plot_lines_label_style, text: "30 FPS" }
+    //                 },
+    //                 {
+    //                     color: 'green',
+    //                     value: 60,
+    //                     width: 1,
+    //                     dashStyle: 'ShortDash',
+    //                     label: { style: plot_lines_label_style, text: "60 FPS" }
+    //                 }
+    //             ]
+    //         },
+    //         xAxis: {
+    //             crosshair: true,
+    //             title: { text: 'Seconds since recording start' }
+    //         },
+    //         tooltip: {
+    //             shared: true,
+    //             valueSuffix: ' FPS'
+    //         }
+    //     });
+    // }
 
     private display_fps_histogram(csvs: Csv[]) {
         let series = csvs.map(csv => {
@@ -535,7 +532,7 @@ export class AppComponent {
                     }
                 ];
             });
-            return [].concat.apply([], series);;
+            return [].concat.apply([], series);
         };
 
         this.fps_avg_chart = new Chart(<Options>{
@@ -586,7 +583,7 @@ export class AppComponent {
         this.display_fps_histogram(csvs);
         this.display_fps_avg_chart(csvs);
         // this.display_fps_chart(csvs);
-        this.time_series_charts = this.time_series_columns.map(column_name => this.create_time_series_chart(csvs, column_name));
+        this.time_series_chart = this.create_time_series_chart(csvs);
     }
 
     update_name(csv: Csv, name: string) {
