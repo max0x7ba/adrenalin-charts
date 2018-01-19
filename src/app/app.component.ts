@@ -246,6 +246,8 @@ function descriptive_stats(values: Float32Array): object {
 }
 
 const descriptive_stats_names = Object.keys(descriptive_stats(new Float32Array(2)));
+const time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
+const time_series_units = [" FPS", "%", " MHz" , " MHz", "°C", "W"," RPM"," GB","%"," GB"];
 
 @Component({
   selector: 'app-root',
@@ -258,8 +260,17 @@ export class AppComponent {
     fps_chart: Chart = null;
     fps_histogram_chart: Chart = null;
 
-    time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
     time_series_chart_options = {
+        "GPU VRAM UTIL": {
+            tooltip: {
+                valueDecimals: 1
+            }
+        },
+        "RAM UTIL": {
+            tooltip: {
+                valueDecimals: 1
+            }
+        },
         "FPS": {
             chart: {
                 height: 400
@@ -295,9 +306,6 @@ export class AppComponent {
             tooltip: {
                 valueSuffix: ' FPS'
             },
-            // legend: {
-            //     enabled: true
-            // },
             plotOptions: {
                 series: {
                     events: {
@@ -340,7 +348,7 @@ export class AppComponent {
         }
     }
 
-    private create_time_series_chart(csvs: Csv[], column_name) {
+    private create_time_series_chart(csvs: Csv[], column_name, column_idx) {
         let series = csvs.map(csv => {
             return {
                 name: csv.series_name,
@@ -371,6 +379,7 @@ export class AppComponent {
             },
             tooltip: {
                 shared: true,
+                valueSuffix: time_series_units[column_idx],
                 headerFormat: '<span style="font-size: 10px">{point.key} seconds since start</span><br/>'
             },
             legend: { enabled: false }
@@ -378,59 +387,6 @@ export class AppComponent {
         let extra_options = this.time_series_chart_options[column_name] || {};
         options = Highcharts.merge(options, extra_options);
         return new Chart(options);
-    }
-
-    private display_fps_chart(csvs: Csv[]) {
-        let series = csvs.map(csv => {
-            return {
-                name: csv.series_name,
-                data: csv.columns['FPS'].slice(csv.series_offset),
-                color: csv.series_color,
-                id: csv.filename,
-                column_name: 'FPS',
-                transform: a => a
-            }
-        });
-        this.fps_chart = new Chart({
-            chart: {
-                height: 600
-            },
-            plotOptions: {
-                line: {
-                    marker: { enabled: false }
-                }
-            },
-            series: series,
-            title: {text: 'FPS timeline'},
-            yAxis: {
-                title: { text: 'Frames Per Second' },
-                minorTickWidth: 10,
-                plotLines: [
-                    {
-                        color: 'red',
-                        value: 30,
-                        width: 1,
-                        dashStyle: 'ShortDash',
-                        label: { style: plot_lines_label_style, text: "30 FPS" }
-                    },
-                    {
-                        color: 'green',
-                        value: 60,
-                        width: 1,
-                        dashStyle: 'ShortDash',
-                        label: { style: plot_lines_label_style, text: "60 FPS" }
-                    }
-                ]
-            },
-            xAxis: {
-                crosshair: true,
-                title: { text: 'Seconds since recording start' }
-            },
-            tooltip: {
-                shared: true,
-                valueSuffix: ' FPS'
-            }
-        });
     }
 
     private display_fps_histogram(csvs: Csv[]) {
@@ -580,8 +536,7 @@ export class AppComponent {
         this.csvs = csvs;
         this.display_fps_histogram(csvs);
         this.display_fps_avg_chart(csvs);
-        // this.display_fps_chart(csvs);
-        this.time_series_charts = this.time_series_columns.map(column_name => this.create_time_series_chart(csvs, column_name));
+        this.time_series_charts = time_series_columns.map(this.create_time_series_chart.bind(this, csvs));
     }
 
     update_name(csv: Csv, name: string) {
