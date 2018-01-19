@@ -35,20 +35,32 @@
   </div>
 </form>
 
+<div *ngIf="time_series_charts" id="time_series_charts"
+     (mousemove)="sync_time_series_charts($event)"
+     (touchmove)="sync_time_series_charts($event)"
+     (touchstart)="sync_time_series_charts($event)">
+  <div class="row">
+    <div class="col">
+      <H5 class="center separator-top">Timelines</H5>
+    </div>
+  </div>
+  <ng-container *ngFor="let c of time_series_charts; index as i">
+    <div class="row">
+      <div class="col">
+        <div class="separator-bottom" [chart]="c"></div>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
 <div *ngIf="fps_avg_chart" class="row fps_avg_chart">
   <div class="col">
-    <div [chart]="fps_avg_chart"></div>
+    <div class="separator-bottom" [chart]="fps_avg_chart"></div>
   </div>
 </div>
 
 <div *ngIf="fps_histogram_chart" class="row">
   <div class="col">
-    <div [chart]="fps_histogram_chart"></div>
-  </div>
-</div>
-
-<div *ngIf="time_series_chart" class="row">
-  <div class="col">
-    <div [chart]="time_series_chart"></div>
+    <div class="separator-bottom" [chart]="fps_histogram_chart"></div>
   </div>
 </div>

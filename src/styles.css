@@ -1,6 +1,6 @@
 body {
     /* color: white; */
-    background-color: #2a2a2b;
+    background-color: black;
     color: #E0E0E3;
     font-family: "Roboto Slab";
 }
@@ -18,11 +18,23 @@ input[type=color] {
     display:none;
 }
 
-table.time_series {
-    font-family: "PT Sans Narrow";
-    text-align: right;
+.center {
+    text-align: center;
 }
 
-/* .series-controls { */
-/*     font-size: 12px; */
-/* } */
+.separator-bottom {
+    margin-bottom: 2em;
+    padding-bottom: 2em;
+    border-color: gray;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    /* border: #E0E0E3 solid 1px; */
+}
+
+.separator-top {
+    margin-top: 2em;
+    padding-top: 2em;
+    border-color: gray;
+    border-top-width: 1px;
+    border-top-style: solid;
+}
