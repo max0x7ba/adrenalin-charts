@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { DataAccess, Csv } from './data-access.service'
+import { DataAccess, Csv, align_timeseries, cumulative_histogram, descriptive_stats } from './data-access.service'
 import { Chart } from 'angular-highcharts';
 import { Options } from 'highcharts';
 
@@ -209,43 +209,7 @@ const plot_lines_label_style = { color: title_color };
 const plot_lines_line_color = grid_color;
 const series_colors = Highcharts.theme.colors;
 
-function cumulative_histogram(values: Float32Array) {
-    values = values.slice();
-    values.sort((a, b) => b - a);
-    let step = values.length / 100;
-    let histogram = new Array(100);
-    for(var i = 1; i <= 100; ++i) {
-        let j = Math.max(0, Math.ceil(i * step) - 1);
-        histogram[i - 1] = [i, values[j]];
-    }
-    return histogram;
-}
-
-function descriptive_stats(values: Float32Array): object {
-    values = values.slice();
-    values.sort();
-    let min_1 = Math.ceil(values.length / 100);
-    let values_1 = values.slice(0, min_1);
-    let values_99 = values.slice(min_1);
-    let min = values[0];
-    let sum_1 = values_1.reduce((a, b) => a + b);
-    let sum_99 = values_99.reduce((a, b) => a + b);
-    let avg = (sum_1 + sum_99) / values.length;
-    let avg_99 = sum_99 / values_99.length;
-    let l = values.length;
-    let median = l % 2
-        ? (values[Math.floor(l / 2)] + values[Math.ceil(l / 2)]) / 2
-        : values[l / 2]
-        ;
-    return {
-        "minumum": min,
-        "median": median,
-        "average": Math.round(avg * 10) / 10,
-        "99% average": Math.round(avg_99 * 10) / 10
-    };
-}
-
-const descriptive_stats_names = Object.keys(descriptive_stats(new Float32Array(2)));
+const descriptive_stats_names = Object.keys(descriptive_stats(new Float32Array(0)));
 const time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
 const time_series_units = [" FPS", "%", " MHz" , " MHz", "°C", "W"," RPM"," GB","%"," GB"];
 
@@ -539,18 +503,22 @@ export class AppComponent {
         this.time_series_charts = time_series_columns.map(this.create_time_series_chart.bind(this, csvs));
     }
 
-    update_name(csv: Csv, name: string) {
+    on_update_name(csv: Csv, name: string) {
         csv.series_name = name;
         this.update_chars(csv, { name: name });
     }
 
-    update_color(csv: Csv, color: string) {
+    on_update_color(csv: Csv, color: string) {
         csv.series_color = color;
         this.update_chars(csv, { color: color });
     }
 
-    update_offset(csv: Csv, offset: string) {
+    on_update_offset(csv: Csv, offset: string) {
         csv.series_offset = parseInt(offset);
+        this.update_offset(csv);
+    }
+
+    private update_offset(csv: Csv) {
         Highcharts.charts.forEach(chart => {
             let update_fn = chart.userOptions.update_fn;
             if(update_fn) {
@@ -575,5 +543,11 @@ export class AppComponent {
                 series.update(a);
             }
         });
+    }
+
+    on_auto_align() {
+        align_timeseries(this.csvs);
+        this.csvs.forEach(csv => this.update_offset(csv));
+        return false;
     }
 }

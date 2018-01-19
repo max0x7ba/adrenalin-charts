@@ -20,17 +20,23 @@
 
     <label class="col-1 col-form-label" for="name{{i}}">Name</label>
     <div class="col-3">
-      <input class="form-control" type="text" id="name{{i}}" [value]="csv.series_name" (input)="update_name(csv, $event.target.value)">
+      <input class="form-control" type="text" id="name{{i}}" [value]="csv.series_name" (input)="on_update_name(csv, $event.target.value)">
     </div>
 
     <label class="col-1 col-form-label" for="color{{i}}">Color</label>
     <div class="col-1">
-      <input class="form-control" type="color" id="color{{i}}" [value]="csv.series_color" (input)="update_color(csv, $event.target.value)">
+      <input class="form-control" type="color" id="color{{i}}" [value]="csv.series_color" (input)="on_update_color(csv, $event.target.value)">
     </div>
 
     <label class="col-1 col-form-label" for="offset{{i}}">Offset</label>
     <div class="col-1">
-      <input class="form-control" type="number" id="offset{{i}}" min="0" [value]="csv.series_offset" (input)="update_offset(csv, $event.target.value)">
+      <input class="form-control" type="number" id="offset{{i}}" min="0" [value]="csv.series_offset" (input)="on_update_offset(csv, $event.target.value)">
+    </div>
+  </div>
+  <div class="form-group form-row right">
+    <div class="col-10"></div>
+    <div class="col-2">
+      <button class="btn btn-primary btn-sm" (click)="on_auto_align()">Auto-align timelines</button>
     </div>
   </div>
 </form>
