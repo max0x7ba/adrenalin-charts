@@ -326,7 +326,7 @@ export class AppComponent {
         var options = {
             chart: {
                 height: 200,
-                marginLeft: 75
+                marginLeft: 80
             },
             plotOptions: {
                 line: {
