@@ -213,6 +213,8 @@ const descriptive_stats_names = Object.keys(descriptive_stats(new Float32Array(0
 const time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
 const time_series_units = [" FPS", "%", " MHz" , " MHz", "°C", "W"," RPM"," GB","%"," GB"];
 
+const initially_visible_avg = ["minimum", "average"];
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -448,6 +450,7 @@ export class AppComponent {
                 return [
                     {
                         name: stat_name,
+                        visible: initially_visible_avg.indexOf(stat_name) >= 0,
                         data: stats.map((stat, i) => {
                             let csv = csvs[i];
                             return {

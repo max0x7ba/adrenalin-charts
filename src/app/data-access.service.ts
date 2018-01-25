@@ -110,7 +110,7 @@ export function descriptive_stats(values: Float32Array): object {
         : values[l / 2]
         ;
     return {
-        "minumum": min,
+        "minimum": min,
         "median": median,
         "average": Math.round(avg * 10) / 10,
         "99% average": Math.round(avg_99 * 10) / 10
