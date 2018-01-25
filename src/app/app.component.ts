@@ -399,6 +399,12 @@ export class AppComponent {
                 plotLines: [
                     {
                         color: plot_lines_line_color,
+                        value: 0,
+                        width: 1,
+                        label: { style: plot_lines_label_style, text: "Maximum" }
+                    },
+                    {
+                        color: plot_lines_line_color,
                         value: 50,
                         width: 1,
                         dashStyle: 'ShortDash',
@@ -417,6 +423,12 @@ export class AppComponent {
                         width: 1,
                         dashStyle: 'ShortDash',
                         label: { style: plot_lines_label_style, text: "99%" }
+                    },
+                    {
+                        color: plot_lines_line_color,
+                        value: 100,
+                        width: 1,
+                        label: { style: plot_lines_label_style, text: "Minumum"}
                     }
                 ]
             },

@@ -4,12 +4,22 @@
   </div>
 </div>
 
-<form  *ngIf="!csvs">
-  <div class="form-group">
-    <p>Choose performance log files to display. Use 1 second sampling interval in <a href="https://support.amd.com/en-us/kb-articles/Pages/DH-026.aspx#Performance">AMD Radeon™ Overlay performance logging settings</a> when logging.</p>
-    <input class="form-control-file" id="filenames" name="filenames" type="file" multiple (change)="data_access.load_local_csvs($event.target.files)">
+<div *ngIf="!csvs" class="row">
+  <div class="col-12">
+    <p>Notes:
+    <ul>
+      <li>Performance Monitoring settings are located in AMD Radeon Settings. Go to Gaming, Global Settings and Performance Monitoring.</li>
+      <li>Use 1 second sampling interval for performance logging.</li>
+      <li>To locate the folder where the log files are saved go to Performance Monitoring settings, Save Folder.</li>
+    </ul>
+    <p>Choose one or more performance log files to display
+
+      <label class="btn btn-primary">
+        Select Files <input hidden id="filenames" name="filenames" type="file" multiple (change)="data_access.load_local_csvs($event.target.files)">
+      </label>
+
+  </div>
 </div>
-</form>
 
 <form *ngIf="csvs" class="series-controls">
   <div class="form-group form-row right" *ngFor="let csv of csvs; index as i">
@@ -36,7 +46,7 @@
   <div class="form-group form-row right">
     <div class="col-10"></div>
     <div class="col-2">
-      <button class="btn btn-primary btn-sm" (click)="on_auto_align()">Auto-align timelines</button>
+      <button class="btn btn-secondary btn-sm" (click)="on_auto_align()">Auto-align timelines</button>
     </div>
   </div>
 </form>
