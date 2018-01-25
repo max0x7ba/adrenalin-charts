@@ -85,10 +85,10 @@ export function cumulative_histogram(values: Float32Array) {
     values = values.slice();
     values.sort((a, b) => b - a);
     let step = values.length / 100;
-    let histogram = new Array(100);
-    for(var i = 1; i <= 100; ++i) {
-        let j = Math.max(0, Math.ceil(i * step) - 1);
-        histogram[i - 1] = [i, values[j]];
+    let histogram = new Array(101);
+    for(var i = 0; i <= 100; ++i) {
+        let j = Math.max(0, Math.round(i * step) - 1);
+        histogram[i] = values[j];
     }
     return histogram;
 }
