@@ -25,16 +25,16 @@ input[type=color] {
 .separator-bottom {
     margin-bottom: 2em;
     padding-bottom: 2em;
-    border-color: gray;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
+    /* border-color: gray; */
+    /* border-bottom-width: 1px; */
+    /* border-bottom-style: solid; */
     /* border: #E0E0E3 solid 1px; */
 }
 
 .separator-top {
     margin-top: 2em;
     padding-top: 2em;
-    border-color: gray;
-    border-top-width: 1px;
-    border-top-style: solid;
+    /* border-color: gray; */
+    /* border-top-width: 1px; */
+    /* border-top-style: solid; */
 }

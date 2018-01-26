@@ -11,8 +11,20 @@ Highcharts.Point.prototype.highlight = function(event) {
     // this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair.
 };
 
+// function syncExtremes(e) {
+//     var thisChart = this.chart;
+//     if(e.trigger !== 'syncExtremes') { // Prevent feedback loop.
+//         Highcharts.each(Highcharts.charts, function(chart) {
+//             if(chart !== thisChart) {
+//                 if(chart.xAxis[0].setExtremes) // It is null while updating
+//                     chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, { trigger: 'syncExtremes' });
+//             }
+//         });
+//     }
+// }
+
 const title_color = '#E0E0E3';
-const grid_color = '#707073';
+const grid_color = '#404040';
 
 Highcharts.theme = {
     colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
@@ -47,7 +59,7 @@ Highcharts.theme = {
         tickColor: grid_color,
         title: {
             style: {
-                color: '#A0A0A3'
+                color: title_color
             }
         }
     },
@@ -64,7 +76,8 @@ Highcharts.theme = {
         tickWidth: 1,
         title: {
             style: {
-                color: '#A0A0A3'
+                // color: '#A0A0A3'
+                color: 'white'
             }
         }
     },
@@ -227,22 +240,42 @@ export class AppComponent {
     fps_histogram_chart: Chart = null;
 
     time_series_chart_options = {
+        "GPU UTIL": {
+            yAxis: { title: {text: 'GPU Utilization, %'}, min: 0, max: 100 },
+        },
+        "GPU SCLK": {
+            yAxis: { title: {text: 'GPU Frequency, MHz'}}
+        },
+        "GPU MCLK": {
+            yAxis: { title: {text: 'VRAM Frequency, MHz'}}
+        },
+        "GPU TEMP": {
+            yAxis: { title: {text: 'GPU Temperature, °C'}}
+        },
+        "GPU PWR": {
+            yAxis: { title: {text: 'GPU Power, W'}}
+        },
+        "GPU FAN": {
+            yAxis: { title: {text: 'GPU Fan, RPM'}}
+        },
         "GPU VRAM UTIL": {
-            tooltip: {
-                valueDecimals: 1
-            }
+            tooltip: { valueDecimals: 1 },
+            yAxis: { title: {text: 'VRAM Utilization, GB'}, min: 0}
+
+        },
+        "CPU UTIL": {
+            yAxis: { title: {text: 'CPU Utilization, %'}, min: 0, max: 100 }
         },
         "RAM UTIL": {
-            tooltip: {
-                valueDecimals: 1
-            }
+            tooltip: { valueDecimals: 1 },
+            yAxis: { title: {text: 'RAM Utilization, GB'}, min: 0}
         },
         "FPS": {
             chart: {
                 height: 400
             },
             yAxis: {
-                title: { text: 'Frames Per Second' },
+                title: { text: 'Frames Per Second, FPS' },
                 minorTickWidth: 10,
                 plotLines: [
                     {
@@ -263,7 +296,6 @@ export class AppComponent {
             },
             xAxis: {
                 crosshair: true,
-                opposite: true,
                 visible: true,
                 title: {
                     text: 'Seconds since recording start'
@@ -341,6 +373,8 @@ export class AppComponent {
                 title: { text: column_name }
             },
             xAxis: {
+                // events: { setExtremes: syncExtremes },
+                opposite: true,
                 crosshair: true
             },
             tooltip: {

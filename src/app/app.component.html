@@ -6,18 +6,16 @@
 
 <div *ngIf="!csvs" class="row">
   <div class="col-12">
-    <p>Notes:
+    <p>Choose one or more performance log files to display
+      <label class="btn btn-primary">
+        Select Files <input hidden id="filenames" name="filenames" type="file" multiple (change)="data_access.load_local_csvs($event.target.files)">
+      </label>
+    <p>FAQ:
     <ul>
       <li>Performance Monitoring settings are located in AMD Radeon Settings. Go to Gaming, Global Settings and Performance Monitoring.</li>
       <li>Use 1 second sampling interval for performance logging.</li>
       <li>To locate the folder where the log files are saved go to Performance Monitoring settings, Save Folder.</li>
     </ul>
-    <p>Choose one or more performance log files to display
-
-      <label class="btn btn-primary">
-        Select Files <input hidden id="filenames" name="filenames" type="file" multiple (change)="data_access.load_local_csvs($event.target.files)">
-      </label>
-
   </div>
 </div>
 
@@ -30,7 +28,7 @@
 
     <label class="col-1 col-form-label" for="name{{i}}">Name</label>
     <div class="col-3">
-      <input class="form-control" type="text" id="name{{i}}" [value]="csv.series_name" (input)="on_update_name(csv, $event.target.value)">
+      <input class="form-control" type="text" id="name{{i}}" [value]="csv.series_name" (input)="on_update_name(csv, $event.target.value)" data-lpignore="true">
     </div>
 
     <label class="col-1 col-form-label" for="color{{i}}">Color</label>
@@ -57,7 +55,7 @@
      (touchstart)="sync_time_series_charts($event)">
   <div class="row">
     <div class="col">
-      <H5 class="center separator-top">Timelines</H5>
+      <H5 class="center">Timelines</H5>
     </div>
   </div>
   <ng-container *ngFor="let c of time_series_charts; index as i">
@@ -77,6 +75,6 @@
 
 <div *ngIf="fps_histogram_chart" class="row">
   <div class="col">
-    <div class="separator-bottom" [chart]="fps_histogram_chart"></div>
+    <div [chart]="fps_histogram_chart"></div>
   </div>
 </div>
