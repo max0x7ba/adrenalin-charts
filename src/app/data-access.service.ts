@@ -1,5 +1,5 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
-import { Observable } from 'rxjs/Rx';
+import { HttpClient } from '@angular/common/http';
 
 export class Csv {
     filename: string;
@@ -129,7 +129,7 @@ export class DataAccess {
 
     @Output() csvs = new EventEmitter<Csv[]>();
 
-    constructor() { }
+    constructor(private http: HttpClient) {}
 
     load_local_csvs(files: FileList) {
         let csvs: Csv[] = [];
@@ -141,5 +141,18 @@ export class DataAccess {
                     this.csvs.emit(csvs);
             });
         }
+    }
+
+    load_csvs(files: string[]) {
+        let event = new EventEmitter<Csv[]>();
+        let csvs = [];
+        for(let file of files) {
+            this.http.get(file, {responseType: 'text'}).subscribe(data => {
+                csvs.push(new Csv(file, data));
+                if(csvs.length === files.length)
+                    event.emit(csvs);
+            })
+        }
+        return event;
     }
 }

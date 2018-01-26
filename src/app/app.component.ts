@@ -599,4 +599,11 @@ export class AppComponent {
         this.csvs.forEach(csv => this.update_offset(csv));
         return false;
     }
+
+    on_example() {
+        let example_csvs = ["Vega 64 LC 1440p Miramar Ultra.CSV",
+                            "Vega 64 LC 1440p Miramar Custom.CSV",
+                            "Vega 64 LC 1440p Miramar Low.CSV"];
+        this.data_access.load_csvs(example_csvs).subscribe(csvs => this.on_csvs(csvs));
+    }
 }

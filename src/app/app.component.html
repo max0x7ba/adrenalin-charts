@@ -10,6 +10,9 @@
       <label class="btn btn-primary">
         Select Files <input hidden id="filenames" name="filenames" type="file" multiple (change)="data_access.load_local_csvs($event.target.files)">
       </label>
+      <label class="btn btn-secondary btn-sm">
+        Load an axample <button hidden (click)="on_example()"></button>
+      </label>
     <p>FAQ:
     <ul>
       <li>Performance Monitoring settings are located in AMD Radeon Settings. Go to Gaming, Global Settings and Performance Monitoring.</li>
