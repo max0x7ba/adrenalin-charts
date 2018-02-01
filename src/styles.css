@@ -25,16 +25,29 @@ input[type=color] {
 .separator-bottom {
     margin-bottom: 2em;
     padding-bottom: 2em;
-    /* border-color: gray; */
-    /* border-bottom-width: 1px; */
-    /* border-bottom-style: solid; */
-    /* border: #E0E0E3 solid 1px; */
 }
 
 .separator-top {
     margin-top: 2em;
     padding-top: 2em;
-    /* border-color: gray; */
-    /* border-top-width: 1px; */
-    /* border-top-style: solid; */
+}
+
+.carbon-img img {
+    vertical-align: top;
+    float: left;
+    margin-right: 8px;
+    margin-bottom: 16px;
+}
+
+.carbon-text {
+    font-size: 14px;
+    font-family: "Pragati Narrow";
+    color: white;
+    text-align: right;
+}
+.carbon-poweredby {
+    display: block;
+    font-size: 12px;
+    font-family: "Pragati Narrow";
+    color: gray;
 }
