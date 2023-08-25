@@ -5,23 +5,7 @@ import { Options } from 'highcharts';
 
 import * as Highcharts from 'highcharts';
 
-Highcharts.Point.prototype["highlight"] = function(event) {
-    // this.onMouseOver(); // Show the hover marker.
-    // this.series.chart.tooltip.refresh(this); // Show the tooltip.
-    // this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair.
-};
-
-// function syncExtremes(e) {
-//     var thisChart = this.chart;
-//     if(e.trigger !== 'syncExtremes') { // Prevent feedback loop.
-//         Highcharts.each(Highcharts.charts, function(chart) {
-//             if(chart !== thisChart) {
-//                 if(chart.xAxis[0].setExtremes) // It is null while updating
-//                     chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, { trigger: 'syncExtremes' });
-//             }
-//         });
-//     }
-// }
+Highcharts.Pointer.prototype.reset = () => null;
 
 const title_color = '#E0E0E3';
 const grid_color = '#404040';
@@ -339,7 +323,7 @@ export class AppComponent {
             for(let series of (<any>chart.ref).series) {
                 let point = series.searchPoint(event, true); // Get the hovered point.
                 if(point)
-                    point.highlight(e);
+                    point.onMouseOver();
             }
         }
     }
