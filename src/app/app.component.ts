@@ -207,8 +207,19 @@ const plot_lines_line_color = grid_color;
 const series_colors = theme.colors;
 
 const descriptive_stats_names = Object.keys(descriptive_stats(new Float32Array(0)));
-const time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
-const time_series_units = [" FPS", "%", " MHz" , " MHz", "°C", "W"," RPM"," GB","%"," GB"];
+
+const time_series_units = {
+    "FPS": " FPS",
+    "GPU UTIL": "%",
+    "GPU SCLK": " MHz",
+    "GPU MCLK": " MHz",
+    "GPU TEMP": "°C",
+    "GPU PWR": "W",
+    "GPU FAN": " RPM",
+    "GPU VRAM UTIL": " GB",
+    "CPU UTIL": "%",
+    "RAM UTIL": " GB"
+};
 
 const initially_visible_avg = ["minimum", "average"];
 
@@ -367,7 +378,7 @@ export class AppComponent {
                 headerFormat: `<table><tr><th>{point.key} seconds since start</th><th>${column_name}</th></tr>`,
                 pointFormat: '<tr><td style="color: {series.color}">{series.name}</td><td><b>{point.y}</b></td></tr>',
                 footerFormat: '</table>',
-                valueSuffix: time_series_units[column_idx],
+                valueSuffix: time_series_units[column_name],
             },
             legend: { enabled: false }
         };
@@ -543,7 +554,7 @@ export class AppComponent {
         this.csvs = csvs;
         this.display_fps_histogram(csvs);
         this.display_fps_avg_chart(csvs);
-        this.time_series_charts = time_series_columns.map(this.create_time_series_chart.bind(this, csvs));
+        this.time_series_charts = Object.getOwnPropertyNames(time_series_units).map(this.create_time_series_chart.bind(this, csvs));
     }
 
     on_update_name(csv: Csv, name: string) {
