@@ -195,6 +195,8 @@ const theme = {
     textColor: '#C0C0C0',
     contrastTextColor: '#F0F0F3',
     maskColor: 'rgba(255,255,255,0.3)',
+
+    lang: { thousandsSep: ',' },
 };
 
 // Apply the theme
@@ -336,7 +338,7 @@ export class AppComponent {
                 color: csv.series_color,
                 id: csv.filename,
                 column_name: column_name,
-                transform: a => a
+                transform_fn: a => a
             }
         });
         var options = {
@@ -361,8 +363,11 @@ export class AppComponent {
             },
             tooltip: {
                 shared: true,
+                useHTML: true,
+                headerFormat: `<table><tr><th>{point.key} seconds since start</th><th>${column_name}</th></tr>`,
+                pointFormat: '<tr><td style="color: {series.color}">{series.name}</td><td><b>{point.y}</b></td></tr>',
+                footerFormat: '</table>',
                 valueSuffix: time_series_units[column_idx],
-                headerFormat: '<span style="font-size: 10px">{point.key} seconds since start</span><br/>'
             },
             legend: { enabled: false }
         };
@@ -379,7 +384,7 @@ export class AppComponent {
                 color: csv.series_color,
                 id: csv.filename,
                 column_name: 'FPS',
-                transform: cumulative_histogram
+                transform_fn: cumulative_histogram
             }
         });
         this.fps_histogram_chart = new Chart({
@@ -452,6 +457,10 @@ export class AppComponent {
             },
             tooltip: {
                 shared: true,
+                useHTML: true,
+                headerFormat: `<table><tr><th>{point.key}% percentile</th><th></th></tr>`,
+                pointFormat: '<tr><td style="color: {series.color}">{series.name}</td><td><b>{point.y}</b></td></tr>',
+                footerFormat: '</table>',
                 valueSuffix: ' FPS'
             },
             legend: { enabled: false }
@@ -515,6 +524,10 @@ export class AppComponent {
             },
             tooltip: {
                 shared: true,
+                useHTML: true,
+                headerFormat: `<table><tr><th colspan=2>{point.key}</th></tr>`,
+                pointFormat: '<tr><td>{series.name}</td><td><b>{point.y}</b></td></tr>',
+                footerFormat: '</table>',
                 valueSuffix: ' FPS',
                 followPointer: true
             },
@@ -525,7 +538,6 @@ export class AppComponent {
     }
 
     private on_csvs(csvs: Csv[]) {
-        // console.log("on_csvs", csvs);
         for(var i = 0; i < csvs.length; ++i)
             csvs[i].series_color = series_colors[i % series_colors.length];
         this.csvs = csvs;
@@ -536,12 +548,12 @@ export class AppComponent {
 
     on_update_name(csv: Csv, name: string) {
         csv.series_name = name;
-        this.update_chars(csv, { name: name });
+        this.update_charts(csv, { name: name });
     }
 
     on_update_color(csv: Csv, color: string) {
         csv.series_color = color;
-        this.update_chars(csv, { color: color });
+        this.update_charts(csv, { color: color });
     }
 
     on_update_offset(csv: Csv, offset: string) {
@@ -557,13 +569,14 @@ export class AppComponent {
             }
             else {
                 let series = chart.get(csv.filename) as Highcharts.Series;
-                let f = series["userOptions"]["transform"];
-                series.update({data: f(csv.columns[series["userOptions"]["column_name"]].slice(csv.series_offset))} as Highcharts.SeriesOptionsType);
+                let transform_fn = series.userOptions["transform_fn"];
+                let data = transform_fn(csv.columns[series.userOptions["column_name"]].slice(csv.series_offset));
+                series.setData(data);
             }
         });
     }
 
-    private update_chars(csv: Csv, a: object) {
+    private update_charts(csv: Csv, a: object) {
         Highcharts.charts.forEach(chart => {
             let update_fn = chart.userOptions["update_fn"];
             if(update_fn) {

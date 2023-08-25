@@ -30,3 +30,18 @@ input[type=color] {
     margin-top: 2em;
     padding-top: 2em;
 }
+
+.highcharts-tooltip table th {
+    font-size: .8em;
+    color: #b0b0b3;
+}
+
+.highcharts-tooltip table th:nth-child(2) {
+    padding-left: 1em;
+    text-align: right;
+}
+
+.highcharts-tooltip table td:nth-child(2) {
+    padding-left: 1em;
+    text-align: right;
+}
