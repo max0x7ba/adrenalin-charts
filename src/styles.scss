@@ -1,5 +1,4 @@
 body {
-    /* color: white; */
     background-color: black;
     color: #E0E0E3;
     font-family: "Roboto Slab";
@@ -30,24 +29,4 @@ input[type=color] {
 .separator-top {
     margin-top: 2em;
     padding-top: 2em;
-}
-
-.carbon-img img {
-    vertical-align: top;
-    float: left;
-    margin-right: 8px;
-    margin-bottom: 16px;
-}
-
-.carbon-text {
-    font-size: 14px;
-    font-family: "Pragati Narrow";
-    color: white;
-    text-align: right;
-}
-.carbon-poweredby {
-    display: block;
-    font-size: 12px;
-    font-family: "Pragati Narrow";
-    color: gray;
 }

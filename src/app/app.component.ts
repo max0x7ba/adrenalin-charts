@@ -1,34 +1,13 @@
 import { Component } from '@angular/core';
 import { DataAccess, Csv, align_timeseries, cumulative_histogram, descriptive_stats } from './data-access.service'
 import { Chart } from 'angular-highcharts';
-import { Options } from 'highcharts';
-
-const Highcharts = require('highcharts');
-
-Highcharts.Point.prototype.highlight = function(event) {
-    this.onMouseOver(); // Show the hover marker.
-    // this.series.chart.tooltip.refresh(this); // Show the tooltip.
-    // this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair.
-};
-
-// function syncExtremes(e) {
-//     var thisChart = this.chart;
-//     if(e.trigger !== 'syncExtremes') { // Prevent feedback loop.
-//         Highcharts.each(Highcharts.charts, function(chart) {
-//             if(chart !== thisChart) {
-//                 if(chart.xAxis[0].setExtremes) // It is null while updating
-//                     chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, { trigger: 'syncExtremes' });
-//             }
-//         });
-//     }
-// }
+import * as Highcharts from 'highcharts';
 
 const title_color = '#E0E0E3';
 const grid_color = '#404040';
 
-Highcharts.theme = {
-    colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'
-    ],
+const theme = {
+    colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
     chart: {
         backgroundColor: 'black',
         style: {
@@ -206,7 +185,6 @@ Highcharts.theme = {
         trackBorderColor: '#404043'
     },
 
-    // special colors for some of the
     legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
     background2: '#505053',
     dataLabelsColor: '#B0B0B3',
@@ -216,11 +194,11 @@ Highcharts.theme = {
 };
 
 // Apply the theme
-Highcharts.setOptions(Highcharts.theme);
+Highcharts.setOptions(theme);
 
 const plot_lines_label_style = { color: title_color };
 const plot_lines_line_color = grid_color;
-const series_colors = Highcharts.theme.colors;
+const series_colors = theme.colors;
 
 const descriptive_stats_names = Object.keys(descriptive_stats(new Float32Array(0)));
 const time_series_columns = ["FPS", "GPU UTIL", "GPU SCLK" , "GPU MCLK", "GPU TEMP", "GPU PWR","GPU FAN","GPU VRAM UTIL","CPU UTIL","RAM UTIL"];
@@ -231,7 +209,7 @@ const initially_visible_avg = ["minimum", "average"];
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
     csvs: Csv[] = null;
@@ -304,46 +282,31 @@ export class AppComponent {
             tooltip: {
                 valueSuffix: ' FPS'
             },
-            plotOptions: {
-                series: {
-                    events: {
-                        legendItemClick: (() => {
-                            let that = this;
-                            return function(event) {
-                                for(var i = 0; i < that.time_series_charts.length; ++i) {
-                                    let chart = that.time_series_charts[i];
-                                    let series = (<any>chart.ref).get(this.options.id);
-                                    // if(series) {
-                                    //     series.visible = this.visible;
-                                        if(this.visible)
-                                            series.hide();
-                                        else
-                                            series.show();
-                                    // }
-                                }
-                            };
-                        })()
-                    }
-                }
-            },
-
+            // plotOptions: {
+            //     series: {
+            //         events: {
+            //             legendItemClick: (() => {
+            //                 let that = this;
+            //                 return function(event) {
+            //                     for(var i = 0; i < that.time_series_charts.length; ++i) {
+            //                         let chart = that.time_series_charts[i];
+            //                         let series = (<any>chart.ref).get(this.options.id);
+            //                             if(this.visible)
+            //                                 series.hide();
+            //                             else
+            //                                 series.show();
+            //                     }
+            //                 };
+            //             })()
+            //         }
+            //     }
+            // },
         }
     };
     time_series_charts: Chart[] = null;
 
-    constructor(private data_access: DataAccess) {
+    constructor(public data_access: DataAccess) {
         data_access.csvs.subscribe(csvs => this.on_csvs(csvs));
-    }
-
-    sync_time_series_charts(e) {
-        for(let chart of this.time_series_charts) {
-            let event = (<any>chart.ref).pointer.normalize(e); // Find coordinates within the chart.
-            for(let series of (<any>chart.ref).series) {
-                let point = series.searchPoint(event, true); // Get the hovered point.
-                if(point)
-                    point.highlight(e);
-            }
-        }
     }
 
     private create_time_series_chart(csvs: Csv[], column_name, column_idx) {
@@ -386,7 +349,7 @@ export class AppComponent {
         };
         let extra_options = this.time_series_chart_options[column_name] || {};
         options = Highcharts.merge(options, extra_options);
-        return new Chart(options);
+        return new Chart(options as unknown as Highcharts.Options);
     }
 
     private display_fps_histogram(csvs: Csv[]) {
@@ -406,7 +369,7 @@ export class AppComponent {
                     marker: { enabled: false }
                 }
             },
-            series: series,
+          series: series as unknown as Highcharts.SeriesOptionsType[],
             title: { text: 'Cumulative FPS histogram' },
             yAxis: {
                 title: { text: 'Frames Per Second' },
@@ -499,7 +462,7 @@ export class AppComponent {
             return [].concat.apply([], series);;
         };
 
-        this.fps_avg_chart = new Chart(<Options>{
+        this.fps_avg_chart = new Chart({
             plotOptions: {
                 bar: {
                     dataLabels: {
@@ -539,7 +502,7 @@ export class AppComponent {
             legend: {
                 verticalAlign: 'top'
             }
-        });
+        } as unknown as Highcharts.Options);
     }
 
     private on_csvs(csvs: Csv[]) {
@@ -569,27 +532,27 @@ export class AppComponent {
 
     private update_offset(csv: Csv) {
         Highcharts.charts.forEach(chart => {
-            let update_fn = chart.userOptions.update_fn;
+            let update_fn = chart.userOptions["update_fn"];
             if(update_fn) {
                 update_fn(chart);
             }
             else {
-                let series = chart.get(csv.filename);
-                let f = series.userOptions.transform;
-                series.update({data: f(csv.columns[series.userOptions.column_name].slice(csv.series_offset))});
+                let series = chart.get(csv.filename) as Highcharts.Series;
+                let f = series["userOptions"]["transform"];
+                series.update({data: f(csv.columns[series["userOptions"]["column_name"]].slice(csv.series_offset))} as Highcharts.SeriesOptionsType);
             }
         });
     }
 
     private update_chars(csv: Csv, a: object) {
         Highcharts.charts.forEach(chart => {
-            let update_fn = chart.userOptions.update_fn;
+            let update_fn = chart.userOptions["update_fn"];
             if(update_fn) {
                 update_fn(chart);
             }
             else {
-                let series = chart.get(csv.filename);
-                series.update(a);
+                let series = chart.get(csv.filename) as Highcharts.Series;
+                series.update(a as Highcharts.SeriesOptionsType);
             }
         });
     }
@@ -601,9 +564,9 @@ export class AppComponent {
     }
 
     on_example() {
-        let example_csvs = ["Vega 64 LC 1440p Miramar Ultra.CSV",
-                            "Vega 64 LC 1440p Miramar Custom.CSV",
-                            "Vega 64 LC 1440p Miramar Low.CSV"];
+        let example_csvs = ["assets/Vega 64 LC 1440p Miramar Ultra.CSV",
+                            "assets/Vega 64 LC 1440p Miramar Custom.CSV",
+                            "assets/Vega 64 LC 1440p Miramar Low.CSV"];
         this.data_access.load_csvs(example_csvs).subscribe(csvs => this.on_csvs(csvs));
     }
 }

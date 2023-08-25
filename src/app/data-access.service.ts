@@ -11,7 +11,7 @@ export class Csv {
     constructor(filename: string, csv: string) {
         this.filename = filename;
 
-        this.series_name = filename.replace(/\.csv$/i, '');
+        this.series_name = filename.replace(/(^.*[/])|(\.csv$)/gi, '');
         this.series_color = null;
         this.series_offset = 0;
 
@@ -120,7 +120,7 @@ export function descriptive_stats(values: Float32Array): object {
 
 function open_csv(file: File, on_csv) {
     var reader = new FileReader();
-    reader.onload = () => on_csv(new Csv(file.name, reader.result));
+    reader.onload = () => on_csv(new Csv(file.name, reader.result as string));
     reader.readAsText(file);
 }
 

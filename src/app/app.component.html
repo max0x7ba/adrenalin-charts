@@ -46,10 +46,7 @@
   </div>
 </form>
 
-<div *ngIf="time_series_charts" id="time_series_charts"
-     (mousemove)="sync_time_series_charts($event)"
-     (touchmove)="sync_time_series_charts($event)"
-     (touchstart)="sync_time_series_charts($event)">
+<div *ngIf="time_series_charts" id="time_series_charts">
   <div class="row">
     <div class="col">
       <H5 class="center">Timelines</H5>
