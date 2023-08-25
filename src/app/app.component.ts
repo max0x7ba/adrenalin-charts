@@ -1,7 +1,27 @@
 import { Component } from '@angular/core';
 import { DataAccess, Csv, align_timeseries, cumulative_histogram, descriptive_stats } from './data-access.service'
 import { Chart } from 'angular-highcharts';
+import { Options } from 'highcharts';
+
 import * as Highcharts from 'highcharts';
+
+Highcharts.Point.prototype["highlight"] = function(event) {
+    // this.onMouseOver(); // Show the hover marker.
+    // this.series.chart.tooltip.refresh(this); // Show the tooltip.
+    // this.series.chart.xAxis[0].drawCrosshair(event, this); // Show the crosshair.
+};
+
+// function syncExtremes(e) {
+//     var thisChart = this.chart;
+//     if(e.trigger !== 'syncExtremes') { // Prevent feedback loop.
+//         Highcharts.each(Highcharts.charts, function(chart) {
+//             if(chart !== thisChart) {
+//                 if(chart.xAxis[0].setExtremes) // It is null while updating
+//                     chart.xAxis[0].setExtremes(e.min, e.max, undefined, false, { trigger: 'syncExtremes' });
+//             }
+//         });
+//     }
+// }
 
 const title_color = '#E0E0E3';
 const grid_color = '#404040';
@@ -282,31 +302,46 @@ export class AppComponent {
             tooltip: {
                 valueSuffix: ' FPS'
             },
-            // plotOptions: {
-            //     series: {
-            //         events: {
-            //             legendItemClick: (() => {
-            //                 let that = this;
-            //                 return function(event) {
-            //                     for(var i = 0; i < that.time_series_charts.length; ++i) {
-            //                         let chart = that.time_series_charts[i];
-            //                         let series = (<any>chart.ref).get(this.options.id);
-            //                             if(this.visible)
-            //                                 series.hide();
-            //                             else
-            //                                 series.show();
-            //                     }
-            //                 };
-            //             })()
-            //         }
-            //     }
-            // },
+            plotOptions: {
+                series: {
+                    events: {
+                        legendItemClick: (() => {
+                            let that = this;
+                            return function(event) {
+                                for(var i = 0; i < that.time_series_charts.length; ++i) {
+                                    let chart = that.time_series_charts[i];
+                                    let series = (<any>chart.ref).get(this.options.id);
+                                    // if(series) {
+                                    //     series.visible = this.visible;
+                                        if(this.visible)
+                                            series.hide();
+                                        else
+                                            series.show();
+                                    // }
+                                }
+                            };
+                        })()
+                    }
+                }
+            },
+
         }
     };
     time_series_charts: Chart[] = null;
 
-    constructor(public data_access: DataAccess) {
+    constructor(private data_access: DataAccess) {
         data_access.csvs.subscribe(csvs => this.on_csvs(csvs));
+    }
+
+    sync_time_series_charts(e) {
+        for(let chart of this.time_series_charts) {
+            let event = (<any>chart.ref).pointer.normalize(e); // Find coordinates within the chart.
+            for(let series of (<any>chart.ref).series) {
+                let point = series.searchPoint(event, true); // Get the hovered point.
+                if(point)
+                    point.highlight(e);
+            }
+        }
     }
 
     private create_time_series_chart(csvs: Csv[], column_name, column_idx) {
