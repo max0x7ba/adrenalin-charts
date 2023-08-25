@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --progress false",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -28,7 +28,6 @@
     "@angular-devkit/build-angular": "^16.2.0",
     "@angular/cli": "~16.2.0",
     "@angular/compiler-cli": "^16.2.0",
-    "@jefiozie/ngx-aws-deploy": "^4.1.0",
     "@types/jasmine": "~4.3.0",
     "@types/node": "^20.5.6",
     "@types/webpack-env": "^1.18.1",
