@@ -1,17 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;600&display=swap');
+
 body {
-    background-color: black;
-    color: #E0E0E3;
-    font-family: "Roboto Slab";
+    font-family: "Roboto Slab", serif;
 }
 
-.separator-bottom {
-    margin-bottom: 2em;
-    padding-bottom: 2em;
-}
-
-.separator-top {
-    margin-top: 2em;
-    padding-top: 2em;
+h1, h2, h3 {
+    font-weight: 600;
 }
 
 .highcharts-tooltip table th {
@@ -27,4 +21,7 @@ body {
 .highcharts-tooltip table td:nth-child(2) {
     padding-left: 1em;
     text-align: right;
+}
+
+.highcharts-background {
 }

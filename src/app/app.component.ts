@@ -13,7 +13,7 @@ const grid_color = '#404040';
 const theme = {
     colors: ['#2b908f', '#90ee7e', '#f45b5b', '#7798BF', '#aaeeee', '#ff0066', '#eeaaee', '#55BF3B', '#DF5353', '#7798BF', '#aaeeee'],
     chart: {
-        backgroundColor: 'black',
+        backgroundColor: 'rgb(33, 37, 41)',
         style: {
             fontFamily: 'Roboto Slab'
         },
@@ -65,7 +65,7 @@ const theme = {
         }
     },
     tooltip: {
-        backgroundColor: 'rgba(0, 0, 0, 0.85)',
+        backgroundColor: 'rgba(0, 0, 0, 0.75)',
         style: {
             color: '#F0F0F0'
         }
@@ -303,11 +303,11 @@ export class AppComponent {
                 series: {
                     events: {
                         legendItemClick: (() => {
-                            let that = this;
+                            const that = this;
                             return function(event) {
                                 for(var i = 0; i < that.time_series_charts.length; ++i) {
-                                    let chart = that.time_series_charts[i];
-                                    let series = (<any>chart.ref).get(this.options.id);
+                                    const chart = that.time_series_charts[i];
+                                    const series = (<any>chart.ref).get(this.options.id);
                                     // if(series) {
                                     //     series.visible = this.visible;
                                         if(this.visible)
@@ -332,17 +332,17 @@ export class AppComponent {
 
     sync_time_series_charts(e) {
         for(let chart of this.time_series_charts) {
-            let event = (<any>chart.ref).pointer.normalize(e); // Find coordinates within the chart.
+            const event = (<any>chart.ref).pointer.normalize(e); // Find coordinates within the chart.
             for(let series of (<any>chart.ref).series) {
-                let point = series.searchPoint(event, true); // Get the hovered point.
+                const point = series.searchPoint(event, true); // Get the hovered point.
                 if(point)
                     point.onMouseOver();
             }
         }
     }
 
-    private create_time_series_chart(csvs: Csv[], column_name, column_idx) {
-        let series = csvs.map(csv => {
+    private display_time_series_chart(csvs: Csv[], column_name: string) {
+        const series = csvs.map(csv => {
             return {
                 name: csv.series_name,
                 data: csv.columns[column_name].slice(csv.series_offset),
@@ -382,13 +382,13 @@ export class AppComponent {
             },
             legend: { enabled: false }
         };
-        let extra_options = this.time_series_chart_options[column_name] || {};
+        const extra_options = this.time_series_chart_options[column_name] || {};
         options = Highcharts.merge(options, extra_options);
         return new Chart(options as unknown as Highcharts.Options);
     }
 
     private display_fps_histogram(csvs: Csv[]) {
-        let series = csvs.map(csv => {
+        const series = csvs.map(csv => {
             return {
                 name: csv.series_name,
                 data: cumulative_histogram(csv.columns['FPS'].slice(csv.series_offset)),
@@ -404,8 +404,8 @@ export class AppComponent {
                     marker: { enabled: false }
                 }
             },
-          series: series as unknown as Highcharts.SeriesOptionsType[],
-            title: { text: 'Cumulative FPS histogram' },
+            series: series as unknown as Highcharts.SeriesOptionsType[],
+            title: { text: null },
             yAxis: {
                 title: { text: 'Frames Per Second' },
                 tickInterval: 10,
@@ -480,15 +480,15 @@ export class AppComponent {
     }
 
     private display_fps_avg_chart(csvs: Csv[]) {
-        let make_series_fn = csvs => {
-            let stats = csvs.map(csv => descriptive_stats(csv.columns['FPS'].slice(csv.series_offset)));
-            let series = descriptive_stats_names.map(stat_name => {
+        const make_series_fn = csvs => {
+            const stats = csvs.map(csv => descriptive_stats(csv.columns['FPS'].slice(csv.series_offset)));
+            const series = descriptive_stats_names.map(stat_name => {
                 return [
                     {
                         name: stat_name,
                         visible: initially_visible_avg.indexOf(stat_name) >= 0,
                         data: stats.map((stat, i) => {
-                            let csv = csvs[i];
+                            const csv = csvs[i];
                             return {
                                 y: stat[stat_name],
                                 name: csv.series_name,
@@ -525,7 +525,7 @@ export class AppComponent {
             update_fn: chart => chart.update({
                 series: make_series_fn(csvs)
             }),
-            title: { text: 'Average FPS' },
+            title: { text: null },
             xAxis: {
                 type: 'category',
                 title: { text: null }
@@ -552,9 +552,12 @@ export class AppComponent {
         for(var i = 0; i < csvs.length; ++i)
             csvs[i].series_color = series_colors[i % series_colors.length];
         this.csvs = csvs;
-        this.display_fps_histogram(csvs);
-        this.display_fps_avg_chart(csvs);
-        this.time_series_charts = Object.getOwnPropertyNames(time_series_units).map(this.create_time_series_chart.bind(this, csvs));
+        const column_names = Object.keys(time_series_units).filter(column_name => csvs.every(csv => Object.hasOwn(csv.columns, column_name)));
+        this.time_series_charts = column_names.map(this.display_time_series_chart.bind(this, csvs));
+        if(column_names.includes("FPS")) {
+            this.display_fps_histogram(csvs);
+            this.display_fps_avg_chart(csvs);
+        }
     }
 
     on_update_name(csv: Csv, name: string) {
@@ -574,14 +577,14 @@ export class AppComponent {
 
     private update_offset(csv: Csv) {
         Highcharts.charts.forEach(chart => {
-            let update_fn = chart.userOptions["update_fn"];
+            const update_fn = chart.userOptions["update_fn"];
             if(update_fn) {
                 update_fn(chart);
             }
             else {
-                let series = chart.get(csv.filename) as Highcharts.Series;
-                let transform_fn = series.userOptions["transform_fn"];
-                let data = transform_fn(csv.columns[series.userOptions["column_name"]].slice(csv.series_offset));
+                const series = chart.get(csv.filename) as Highcharts.Series;
+                const transform_fn = series.userOptions["transform_fn"];
+                const data = transform_fn(csv.columns[series.userOptions["column_name"]].slice(csv.series_offset));
                 series.setData(data);
             }
         });
@@ -589,12 +592,12 @@ export class AppComponent {
 
     private update_charts(csv: Csv, a: object) {
         Highcharts.charts.forEach(chart => {
-            let update_fn = chart.userOptions["update_fn"];
+            const update_fn = chart.userOptions["update_fn"];
             if(update_fn) {
                 update_fn(chart);
             }
             else {
-                let series = chart.get(csv.filename) as Highcharts.Series;
+                const series = chart.get(csv.filename) as Highcharts.Series;
                 series.update(a as Highcharts.SeriesOptionsType);
             }
         });
@@ -607,7 +610,7 @@ export class AppComponent {
     }
 
     on_example() {
-        let example_csvs = ["assets/Vega 64 LC 1440p Miramar Ultra.CSV",
+        const example_csvs = ["assets/Vega 64 LC 1440p Miramar Ultra.CSV",
                             "assets/Vega 64 LC 1440p Miramar Custom.CSV",
                             "assets/Vega 64 LC 1440p Miramar Low.CSV"];
         this.data_access.load_csvs(example_csvs).subscribe(csvs => this.on_csvs(csvs));
