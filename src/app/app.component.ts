@@ -7,6 +7,10 @@ import * as Highcharts from 'highcharts';
 
 Highcharts.Pointer.prototype.reset = () => null;
 
+// Highcharts["Templating"].helpers.log = function() {
+//     console.log(arguments[0].ctx);
+// };
+
 const title_color = '#E0E0E3';
 const grid_color = '#404040';
 
@@ -540,7 +544,8 @@ export class AppComponent {
                 followPointer: true
             },
             legend: {
-                verticalAlign: 'top'
+                verticalAlign: 'top',
+                symbolHeight: 0,
             }
         } as unknown as Highcharts.Options);
     }
