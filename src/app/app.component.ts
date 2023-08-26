@@ -211,14 +211,23 @@ const descriptive_stats_names = Object.keys(descriptive_stats(new Float32Array(0
 const time_series_units = {
     "FPS": " FPS",
     "GPU UTIL": "%",
+    "CPU UTIL": "%",
     "GPU SCLK": " MHz",
     "GPU MCLK": " MHz",
+    "CPU FREQUENCY": " GHz",
+    "CPU TEMP": "°C",
+    "CPU CUR TEMP": "°C",
     "GPU TEMP": "°C",
+    "GPU CUR TEMP": "°C",
+    "GPU JUNC TEMP": "°C",
     "GPU PWR": "W",
+    "CPU POWER": "W",
     "GPU FAN": " RPM",
     "GPU VRAM UTIL": " GB",
-    "CPU UTIL": "%",
-    "RAM UTIL": " GB"
+    "RAM UTIL": " GB",
+    "CPU VOLTAGE": "V",
+    "CPU EDC": "A",
+    "CPU TDC": "A"
 };
 
 const initially_visible_avg = ["minimum", "average"];
@@ -235,36 +244,24 @@ export class AppComponent {
     fps_histogram_chart: Chart = null;
 
     time_series_chart_options = {
-        "GPU UTIL": {
-            yAxis: { title: {text: 'GPU Utilization, %'}, min: 0, max: 100 },
-        },
-        "GPU SCLK": {
-            yAxis: { title: {text: 'GPU Frequency, MHz'}}
-        },
-        "GPU MCLK": {
-            yAxis: { title: {text: 'VRAM Frequency, MHz'}}
-        },
-        "GPU TEMP": {
-            yAxis: { title: {text: 'GPU Temperature, °C'}}
-        },
-        "GPU PWR": {
-            yAxis: { title: {text: 'GPU Power, W'}}
-        },
-        "GPU FAN": {
-            yAxis: { title: {text: 'GPU Fan, RPM'}}
-        },
-        "GPU VRAM UTIL": {
-            tooltip: { valueDecimals: 1 },
-            yAxis: { title: {text: 'VRAM Utilization, GB'}, min: 0}
-
-        },
-        "CPU UTIL": {
-            yAxis: { title: {text: 'CPU Utilization, %'}, min: 0, max: 100 }
-        },
-        "RAM UTIL": {
-            tooltip: { valueDecimals: 1 },
-            yAxis: { title: {text: 'RAM Utilization, GB'}, min: 0}
-        },
+        "GPU UTIL": { yAxis: { title: {text: 'GPU Utilization, %'}, min: 0, max: 100 } },
+        "GPU SCLK": { yAxis: { title: {text: 'GPU Frequency, MHz'} } },
+        "GPU MCLK": { yAxis: { title: {text: 'VRAM Frequency, MHz'} } },
+        "CPU FREQUENCY": { yAxis: { title: {text: 'CPU Frequency, GHz'} } },
+        "GPU TEMP": { yAxis: { title: {text: 'GPU Temperature, °C'} } },
+        "GPU CUR TEMP": { yAxis: { title: {text: 'GPU Temperature, °C'} } },
+        "CPU TEMP": { yAxis: { title: {text: 'CPU Temperature, °C'} } },
+        "CPU CUR TEMP": { yAxis: { title: {text: 'CPU Temperature, °C'} } },
+        "GPU JUNC TEMP": { yAxis: { title: {text: 'GPU Junction Temperature, °C'} } },
+        "GPU PWR": { yAxis: { title: {text: 'GPU Power, W'} } },
+        "CPU POWER": { yAxis: { title: {text: 'CPU Power, W'} } },
+        "CPU VOLTAGE": { yAxis: { title: {text: 'CPU Voltage, V'} } },
+        "CPU EDC": { yAxis: { title: {text: 'CPU EDC, A'} } },
+        "CPU TDC": { yAxis: { title: {text: 'CPU TDC, A'} } },
+        "GPU FAN": { yAxis: { title: {text: 'GPU Fan, RPM'} } },
+        "GPU VRAM UTIL": { tooltip: { valueDecimals: 1 }, yAxis: { title: {text: 'VRAM Utilization, GB'}, min: 0} },
+        "CPU UTIL": { yAxis: { title: {text: 'CPU Utilization, %'}, min: 0, max: 100 } },
+        "RAM UTIL": { tooltip: { valueDecimals: 1 }, yAxis: { title: {text: 'RAM Utilization, GB'}, min: 0} },
         "FPS": {
             chart: {
                 height: 400
