@@ -1,77 +1,92 @@
-<div *ngIf="!csvs" class="row">
-  <div class="col-12">
-    <p>Choose one or more performance log files to display
-      <label class="btn btn-primary">
-        Select Files <input hidden id="filenames" name="filenames" type="file" multiple (change)="data_access.load_local_csvs($event.target.files)">
-      </label>
-      <label class="btn btn-secondary btn-sm">
-        Load an axample <button hidden (click)="on_example()"></button>
-      </label>
-    <h2>Notes</h2>
-    <ul>
-        <li>Performance Monitoring settings are located in AMD Radeon Settings. <a href="https://www.amd.com/en/support/kb/faq/dh3-038">Full info.</a></li>
-      <li>Use 1 second sampling interval for performance logging.</li>
-      <li>To locate the folder where the log files are saved go to Performance Monitoring settings, Save Folder.</li>
-    </ul>
-  </div>
+<ng-container *ngIf="!csvs">
+<div class="row align-items-center">
+    <div class="col-auto">
+        <p>Choose one or more performance log files to display
+            <label class="btn btn-primary">
+                Select Files <input hidden id="filenames" name="filenames" type="file" accept=".csv" multiple (change)="data_access.load_local_csvs($event.target.files)">
+            </label>
+    </div>
+    <div class="col-auto">
+        <p>
+            <label class="btn btn-secondary">
+                load an example <button hidden (click)="on_example()"></button>
+            </label>
+    </div>
 </div>
-
-<form *ngIf="csvs" class="series-controls">
-  <div class="form-group form-row right" *ngFor="let csv of csvs; index as i">
-    <label class="col-1 col-form-label" for="filename{{i}}">Filename</label>
-    <div class="col-3">
-      <input class="form-control" type="text" id="filename{{i}}" readonly [value]="csv.filename">
+<div class="row">
+    <div class="col">
+        <h2>Notes</h2>
+        <ul>
+            <li>Performance Monitoring settings are located in AMD Radeon Settings. <a href="https://www.amd.com/en/support/kb/faq/dh3-038">Full info.</a></li>
+            <li>Use 1 second sampling interval for performance logging.</li>
+            <li>To locate the folder where the log files are saved go to Performance Monitoring settings, Save Folder.</li>
+        </ul>
     </div>
+</div>
+</ng-container>
 
-    <label class="col-1 col-form-label" for="name{{i}}">Name</label>
-    <div class="col-3">
-      <input class="form-control" type="text" id="name{{i}}" [value]="csv.series_name" (input)="on_update_name(csv, $event.target.value)" data-lpignore="true">
+<ng-container *ngIf="csvs">
+    <div class="row align-items-center mt-2" *ngFor="let csv of csvs; index as i">
+    <div class="col-4">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">Filename</span>
+            <input class="form-control" type="text" id="filename{{i}}" disabled [value]="csv.filename">
+        </div>
     </div>
-
-    <label class="col-1 col-form-label" for="color{{i}}">Color</label>
-    <div class="col-1">
-      <input class="form-control" type="color" id="color{{i}}" [value]="csv.series_color" (input)="on_update_color(csv, $event.target.value)">
+    <div class="col-4">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">Name</span>
+            <input class="form-control" type="text" id="name{{i}}" [value]="csv.series_name" (input)="on_update_name(csv, $event.target.value)" data-lpignore="true">
+        </div>
     </div>
-
-    <label class="col-1 col-form-label" for="offset{{i}}">Offset</label>
-    <div class="col-1">
-      <input class="form-control" type="number" id="offset{{i}}" min="0" [value]="csv.series_offset" (input)="on_update_offset(csv, $event.target.value)">
-    </div>
-  </div>
-  <div class="form-group form-row right">
-    <div class="col-10"></div>
     <div class="col-2">
-      <button class="btn btn-secondary btn-sm" (click)="on_auto_align()">Auto-align timelines</button>
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">Color</span>
+            <input class="form-control btn" type="color" id="color{{i}}" [value]="csv.series_color" (input)="on_update_color(csv, $event.target.value)">
+        </div>
     </div>
-  </div>
-</form>
+    <div class="col-2">
+        <div class="input-group input-group-sm">
+            <span class="input-group-text">Offset</span>
+            <input class="form-control" type="number" id="offset{{i}}" min="0" [value]="csv.series_offset" (input)="on_update_offset(csv, $event.target.value)">
+        </div>
+    </div>
+</div>
+<div class="row align-items-center mt-2">
+    <div class="col-2 offset-10">
+        <div class="input-group input-group-sm">
+            <button class="form-control btn btn-primary btn-sm" (click)="on_auto_align()">Auto-align timelines</button>
+        </div>
+    </div>
+</div>
+</ng-container>
 
 <div *ngIf="time_series_charts" id="time_series_charts"
      (mousemove)="sync_time_series_charts($event)"
      (touchmove)="sync_time_series_charts($event)"
      (touchstart)="sync_time_series_charts($event)">
-  <div class="row">
-    <div class="col">
-      <H5 class="center">Timelines</H5>
-    </div>
-  </div>
-  <ng-container *ngFor="let c of time_series_charts; index as i">
     <div class="row">
-      <div class="col">
-        <div class="separator-bottom" [chart]="c"></div>
-      </div>
+        <div class="col">
+            <H5 class="center">Timelines</H5>
+        </div>
     </div>
-  </ng-container>
+    <ng-container *ngFor="let c of time_series_charts; index as i">
+        <div class="row">
+            <div class="col">
+                <div class="separator-bottom" [chart]="c"></div>
+            </div>
+        </div>
+    </ng-container>
 </div>
 
 <div *ngIf="fps_avg_chart" class="row fps_avg_chart">
-  <div class="col">
-    <div class="separator-bottom" [chart]="fps_avg_chart"></div>
-  </div>
+    <div class="col">
+        <div class="separator-bottom" [chart]="fps_avg_chart"></div>
+    </div>
 </div>
 
 <div *ngIf="fps_histogram_chart" class="row">
-  <div class="col">
-    <div [chart]="fps_histogram_chart"></div>
-  </div>
+    <div class="col">
+        <div [chart]="fps_histogram_chart"></div>
+    </div>
 </div>

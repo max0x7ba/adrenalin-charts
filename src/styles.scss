@@ -4,23 +4,6 @@ body {
     font-family: "Roboto Slab";
 }
 
-input[type=color] {
-    padding: 0;
-    margin-top: calc(.375rem + 1px);
-}
-
-.right {
-    text-align: right;
-}
-
-.fps_avg_chart .highcharts-legend-item rect {
-    display:none;
-}
-
-.center {
-    text-align: center;
-}
-
 .separator-bottom {
     margin-bottom: 2em;
     padding-bottom: 2em;
