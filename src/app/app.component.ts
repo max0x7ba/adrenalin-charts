@@ -7,9 +7,9 @@ import * as Highcharts from 'highcharts';
 
 Highcharts.Pointer.prototype.reset = () => null;
 
-// Highcharts["Templating"].helpers.log = function() {
-//     console.log(arguments[0].ctx);
-// };
+Highcharts["Templating"].helpers.log = function() {
+    console.log(arguments[0].ctx);
+};
 
 const title_color = '#E0E0E3';
 const grid_color = '#404040';
@@ -537,7 +537,7 @@ export class AppComponent {
             tooltip: {
                 shared: true,
                 useHTML: true,
-                headerFormat: `<table><tr><th colspan=2>{point.key}</th></tr>`,
+                headerFormat: `<table><tr><th colspan=2 style="color: {point.color}">{point.key}</th></tr>`,
                 pointFormat: '<tr><td>{series.name}</td><td><b>{point.y}</b></td></tr>',
                 footerFormat: '</table>',
                 valueSuffix: ' FPS',

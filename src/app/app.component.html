@@ -17,6 +17,7 @@
     <div class="col">
         <h2>Notes</h2>
         <ul>
+            <li><i>Adrenalin</i> is in the name because that was the name of AMD software edition which introduced the performance monitoring logging in December 2017.</li>
             <li>Performance Monitoring settings are located in <a href="https://www.amd.com/en/support/kb/faq/dh3-038">AMD Software Settings</a>.</li>
             <li>Use 1 second sampling interval for performance logging.</li>
             <li>To locate the folder where the log files are saved go to Performance Monitoring settings, Advanced, Performance Logging Location.</li>
@@ -61,12 +62,12 @@
 </div>
 </ng-container>
 
-<div *ngIf="time_series_charts" id="time_series_charts"
+<div *ngIf="time_series_charts" class="mt-5" id="time_series_charts"
      (mousemove)="sync_time_series_charts($event)"
      (touchmove)="sync_time_series_charts($event)"
      (touchstart)="sync_time_series_charts($event)">
-    <div class="row mt-6 align-items-end">
-        <div class="col text-center">
+    <div class="row align-items-end">
+        <div class="col">
             <H2>Timelines</H2>
         </div>
     </div>
@@ -80,9 +81,9 @@
 </div>
 
 <ng-container *ngIf="fps_avg_chart">
-<div class="row mt-6 align-items-end">
-    <div class="col text-center">
-        <H2>FPS statistics</H2>
+<div class="row align-items-end mt-5">
+    <div class="col">
+        <H2>FPS averages</H2>
     </div>
 </div>
 <div class="row fps_avg_chart">
@@ -93,8 +94,8 @@
 </ng-container>
 
 <ng-container *ngIf="fps_histogram_chart">
-<div class="row mt-6 align-items-end">
-    <div class="col text-center">
+<div class="row align-items-end mt-5">
+    <div class="col">
         <H2>FPS percentiles</H2>
     </div>
 </div>
