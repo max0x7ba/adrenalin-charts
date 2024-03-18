@@ -1,6 +1,12 @@
 import { Injectable, EventEmitter, Output } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
+function _n(n: Number) {
+    return n.toLocaleString(undefined, {
+        useGrouping: true,
+    });
+}
+
 export class Csv {
     filename: string;
     series_name: string;
@@ -9,6 +15,9 @@ export class Csv {
     columns: object;
 
     constructor(filename: string, csv: string) {
+        const msg = `Loaded ${filename}`;
+        console.time(msg);
+
         this.filename = filename.replace(/^.*[/]/, ''); // Remove path.
         this.series_name = this.filename.replace(/\.csv$/i, ''); // Remove extension.
         this.series_color = null;
@@ -20,6 +29,7 @@ export class Csv {
 
         // Parse csv rows column-wise.
         const columns = names.map(() => new Float32Array(rows.length));
+
         // rows.forEach((row, r) => row.split(',').forEach((v, c) => columns[c][r] = parseFloat(v)));
         for(var r = 0; r < rows.length; ++r) {
             const row = rows[r].split(',');
@@ -27,13 +37,16 @@ export class Csv {
                 columns[c][r] = parseFloat(row[c]);
         }
         this.columns = Object.fromEntries(names.map((name, c) => [name, columns[c]]));
+
+        console.timeLog(msg, `; ${_n(rows.length)} rows, ${_n(columns.length)} columns, ${_n(columns[0].byteLength)} bytes per column.`);
     }
 }
 
-function normalize(column) {
-    const mean = column.reduce((a, b) => a + b, 0) / column.length;
-    const stdev_inv = column.length / column.reduce((a, v) => a + Math.pow(v - mean, 2), 0);
-    return column.map(v => (v - mean) * stdev_inv);
+function normalize(column: Float32Array) {
+    const mean = column.reduce((sum, x) => sum + x, 0.) / column.length;
+    const variance = column.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0.);
+    const stdev_inv = Math.pow(variance / column.length, -0.5);
+    return column.map(x => (x - mean) * stdev_inv);
 }
 
 function shift_left_longer_series(a, b) {
@@ -62,6 +75,8 @@ function shift_left_longer_series(a, b) {
 }
 
 export function align_timeseries(csvs: Csv[]): Csv[] {
+    const msg = `Align timelines`;
+    console.time(msg);
     const fps_norm = csvs.map(csv => normalize(csv.columns['FPS']));
     // Align series from shortes to longest.
     const idxs = fps_norm.map((v, i) => i);
@@ -73,6 +88,7 @@ export function align_timeseries(csvs: Csv[]): Csv[] {
         const b = fps_norm[b_idx];
         csvs[b_idx].series_offset = shift_left_longer_series(a, b);
     }
+    console.timeLog(msg);
     return csvs;
 }
 
