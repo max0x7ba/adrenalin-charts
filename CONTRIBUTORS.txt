@@ -1,0 +1,3 @@
+Contributors:
+
+- bocmanpy (https://github.com/max0x7ba/adrenalin-charts/pull/4)
